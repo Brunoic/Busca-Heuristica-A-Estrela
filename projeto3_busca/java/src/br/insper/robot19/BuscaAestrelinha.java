@@ -3,6 +3,7 @@ package br.insper.robot19;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Comparator;
 
 public class BuscaAestrelinha {
     private Block start = null;
@@ -10,6 +11,7 @@ public class BuscaAestrelinha {
     private GridMap map = null;
 
     private Queue<Node> border;
+    private boolean[][] visited;
 
     private LinkedList<RobotAction> list = new LinkedList<>();
 
@@ -17,6 +19,15 @@ public class BuscaAestrelinha {
         this.start = start;
         this.end = end;
         this.map = map;
+        visited = new boolean[map.getHeight()][map.getWidth()];
+        for (int i=0; i<map.getHeight();i++){
+            for (int j=0; j<map.getWidth();j++){
+                visited[i][j] = false;
+
+            }
+        }
+
+
     }
 
     private Node searchNode(){
@@ -32,6 +43,8 @@ public class BuscaAestrelinha {
             Node node = border.remove();
             Block actual = node.getValue();
 
+            visited[actual.row][actual.col] = true;
+
             int counter = 0;
 
             double min = 9999999;
@@ -46,12 +59,14 @@ public class BuscaAestrelinha {
             } else for(RobotAction acao : RobotAction.values()) {
 
                 Block next = map.nextBlock(actual, acao);
-                Node aa = new Node(next, node, acao, next.type.cost);
+                if (next != null && next.type != BlockType.WALL && !visited[next.row][next.col]){
+                    Node aa = new Node(next, node, acao, next.type.cost);
+                    border.add(aa);
+                    nextHeuristica[counter] = next.getEstrelinha(this.end, aa.getPathCost());
 
-                nextHeuristica[counter] = next.getEstrelinha(this.end, aa.getPathCost());
-
-                if (nextHeuristica[counter]<min){
-                    min = nextHeuristica[counter];
+                    if (nextHeuristica[counter]<min){
+                        min = nextHeuristica[counter];
+                    }
                 }
                 counter++;
             }
