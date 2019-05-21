@@ -6,3 +6,10 @@ public enum RobotAction {
 	LEFT,
 	RIGHT
 }
+
+//public enum RobotAction {
+//	DOWN,
+//	LEFT,
+//	RIGHT,
+//	UP
+//}
